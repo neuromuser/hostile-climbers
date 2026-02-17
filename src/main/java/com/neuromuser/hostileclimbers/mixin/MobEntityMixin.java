@@ -2,10 +2,12 @@ package com.neuromuser.hostileclimbers.mixin;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.SpiderNavigation;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -21,8 +23,11 @@ public abstract class MobEntityMixin {
     @Unique
     private int hc_explodingCooldown = 0;
 
-    @Inject(method = "createNavigation", at = @At("HEAD"))
+    @Inject(method = "createNavigation", at = @At("HEAD"), cancellable = true)
     private void hc$useSpiderNavigation(World world, CallbackInfoReturnable<EntityNavigation> cir) {
+        if ((Object) this instanceof HostileEntity && !((Object) this instanceof CreeperEntity)) {
+            cir.setReturnValue(new SpiderNavigation((MobEntity) (Object) this, world));
+        }
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
@@ -30,9 +35,11 @@ public abstract class MobEntityMixin {
         MobEntity self = (MobEntity) (Object) this;
         if (self.getWorld().isClient) return;
         if (!(self instanceof HostileEntity)) return;
+
         if (self instanceof CreeperEntity creeper) {
             if (creeper.getFuseSpeed() > 0) {
                 hc_explodingCooldown = 40;
+                self.getNavigation().stop();
             }
             if (hc_explodingCooldown > 0) {
                 hc_explodingCooldown--;
@@ -46,10 +53,18 @@ public abstract class MobEntityMixin {
         World world = self.getWorld();
         BlockPos pos = self.getBlockPos();
 
-        boolean ceilingBlocked = world.getBlockState(pos.up(2)).isSolid();
+        int headBlock = MathHelper.ceil(self.getHeight()) + 1;
+        boolean ceilingBlocked = false;
+        for (int y = 1; y <= headBlock; y++) {
+            if (world.getBlockState(pos.up(y)).isSolid()) {
+                ceilingBlocked = true;
+                break;
+            }
+        }
 
         if (ceilingBlocked) {
-            hc_ceilingCooldown = 60;
+            hc_ceilingCooldown = 60; 
+            self.getNavigation().stop(); 
         }
 
         boolean shouldClimb = self.horizontalCollision && !ceilingBlocked && hc_ceilingCooldown <= 0;
