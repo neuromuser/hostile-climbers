@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "com.neuromuser.hostileclimbers.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "LivingEntityFallDamageMixin",
+    "LivingEntityFlagsAccessor",
+    "LivingEntityMixin",
+    "MobEntityMixin"
+  ],
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
