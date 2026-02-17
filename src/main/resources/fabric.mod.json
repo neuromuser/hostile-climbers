@@ -3,7 +3,7 @@
   "id": "hostileclimbers",
   "version": "${version}",
   "name": "Hostile Climbers",
-  "description": "A Fabric mod",
+  "description": "Allows other enemy mobs to climb walls just like spiders.",
   "authors": [
     "Neuromuser"
   ],
