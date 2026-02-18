@@ -33,16 +33,13 @@ public class HostileClimbersConfig {
             "minecraft:wither_skeleton",
             "minecraft:vindicator",
             "minecraft:pillager",
-            "minecraft:evoker",
             "minecraft:witch",
             "minecraft:piglin",
             "minecraft:piglin_brute",
             "minecraft:zombified_piglin",
             "minecraft:silverfish",
             "minecraft:endermite",
-            "minecraft:blaze",
-            "minecraft:bogged",
-            "minecraft:breeze"
+            "minecraft:bogged"
     };
 
     private transient Set<String> mobSet;
